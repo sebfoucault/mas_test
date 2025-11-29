@@ -184,18 +184,45 @@ def generate_voice_announcement(
 
     try:
         # Initialize the TTS engine
-        engine = pyttsx3.init()
+        import platform
+        if platform.system() == 'Windows':
+            engine = pyttsx3.init()
+        else:
+            # Force eSpeak on Linux
+            engine = pyttsx3.init(driverName='espeak')
 
         # Set properties for natural speech
         engine.setProperty('rate', AudioConstants.TTS_RATE)
         engine.setProperty('volume', AudioConstants.TTS_VOLUME)
 
         # Try to set a female voice if available
+        import platform
         voices = engine.getProperty('voices')
-        for voice in voices:
-            if 'female' in voice.name.lower() or 'zira' in voice.name.lower():
-                engine.setProperty('voice', voice.id)
-                break
+        female_voice_found = False
+        if platform.system() == 'Windows':
+            for voice in voices:
+                if 'female' in voice.name.lower() or 'zira' in voice.name.lower():
+                    engine.setProperty('voice', voice.id)
+                    female_voice_found = True
+                    break
+        else:
+            # On Linux (eSpeak), female voices often have 'f' in their id or name
+            # Also check for mbrola voices like 'mb-us1', 'us-mbrola-1' (can be female)
+            for voice in voices:
+                if ('female' in voice.name.lower() or
+                    'mb-us1' in voice.id.lower() or
+                    'mb-us1' in voice.name.lower() or
+                    'us-mbrola-1' in voice.id.lower() or
+                    'us-mbrola-1' in voice.name.lower()):
+                    engine.setProperty('voice', voice.id)
+                    female_voice_found = True
+                    logger.info(f"Selected female/mbrola voice: {voice.id}")
+                    break
+        if not female_voice_found:
+            logger.info("Available voices:")
+            for voice in voices:
+                logger.info(f"Voice: {voice.id} - {voice.name}")
+            logger.info("No female voice found; using default voice.")
 
         # Create temporary file for TTS output
         timestamp = str(int(time.time() * 1000))
