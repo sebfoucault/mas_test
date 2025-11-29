@@ -1,0 +1,20 @@
+# MAS Training Audio Generator Dependencies
+#
+# Core dependency for text-to-speech functionality
+pyttsx3==2.99
+
+# Note: The following are built-in Python modules (no installation required):
+# - dataclasses (Python 3.7+)
+# - re
+# - wave
+# - struct
+# - math
+# - tempfile
+# - os
+# - random
+# - time
+#
+# pyttsx3 will automatically install its Windows dependencies:
+# - comtypes (for Windows COM interfaces)
+# - pywin32 (for Windows API access)
+# - pypiwin32 (Windows-specific extensions)

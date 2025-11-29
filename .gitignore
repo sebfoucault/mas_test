@@ -1,0 +1,10 @@
+# Ignore Python virtual environment
+.venv/
+.cache/
+
+# Waves files
+*.wav
+
+# Python cache files
+__pycache__/
+*.pyc
